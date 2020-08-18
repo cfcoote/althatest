@@ -1,6 +1,6 @@
 FROM php:7.2-apache
 
-ENV BLESTA_VERSION=4.7.2
+ENV BLESTA_VERSION=4.11.1
 ENV BUILD_DEPS \
         cron \
         g++ \
