@@ -1,6 +1,6 @@
 FROM php:7.2-apache
 
-ENV BLESTA_VERSION=4.11.1
+ENV BLESTA_VERSION=4.10.2
 ENV BUILD_DEPS \
         cron \
         g++ \
@@ -57,15 +57,9 @@ RUN apt-get update \
 ADD supervisord.conf /etc/supervisor/supervisord.conf
 ADD logformat.conf /etc/apache2/conf-enabled/logformat.conf
 ADD remoteip.conf /etc/apache2/conf-enabled/remoteip.conf
-ADD entrypoint.sh /entrypoint.sh
 
-RUN mkdir /var/www/app \
-    && curl -o blesta.zip -sSL https://account.blesta.com/client/plugin/download_manager/client_main/download/135/blesta-${VERSION}.zip \
-    && unzip blesta.zip -d /var/www/app \
-    && rm blesta.zip \
-    && chown -R www-data:www-data /var/www/app/blesta/cache /var/www/app/uploads /var/www/app/blesta/config \
-    && mv /var/www/app /var/www/docker-backup-app \
-    && sed -ri -e 's!/var/www/html!/var/www/app/blesta!g' /etc/apache2/sites-available/*.conf \
+
+RUN sed -ri -e 's!/var/www/html!/var/www/app/blesta!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/html!/var/www/app/blesta!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
     && echo '*/5 * * * * www-data /usr/local/bin/php /var/www/app/blesta/index.php cron' > /etc/cron.d/blesta \
     && echo '0 9 * * 3 www-data [ `date +\%d` -le 7 ] && /usr/bin/curl -sSL https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz | gunzip > /var/www/app/uploads/system/GeoLite2-City.mmdb' >> /etc/cron.d/blesta
@@ -75,5 +69,4 @@ WORKDIR /var/www/app
 EXPOSE 80
 
 HEALTHCHECK CMD curl --silent --fail localhost:80 || exit 1
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord"]
