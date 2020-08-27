@@ -1,6 +1,5 @@
 FROM php:7.2-apache
 
-ENV BLESTA_VERSION=4.10.2
 ENV BUILD_DEPS \
         cron \
         g++ \
@@ -26,7 +25,6 @@ ENV BUILD_DEPS \
         python3-pycurl \
         unzip \
         wget \
-        supervisor \
         git
 
 RUN apt-get update \
@@ -49,24 +47,10 @@ RUN apt-get update \
     && echo "ServerSignature Off" >> /etc/apache2/conf-enabled/security.conf \
     && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
     && ln -sf /proc/self/fd/1 /var/log/apache2/error.log \
-    && curl -sSL -o /tmp/ioncube.zip http://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.zip \
-    && unzip /tmp/ioncube.zip -d /usr/local/lib/php/extensions/* \
-    && rm -Rf /tmp/ioncube.zip \
-    && echo "zend_extension=ioncube/ioncube_loader_lin_7.2.so" > /usr/local/etc/php/conf.d/00_docker-php-ext-ioncube.ini
-
-ADD supervisord.conf /etc/supervisor/supervisord.conf
-ADD logformat.conf /etc/apache2/conf-enabled/logformat.conf
-ADD remoteip.conf /etc/apache2/conf-enabled/remoteip.conf
 
 
-RUN sed -ri -e 's!/var/www/html!/var/www/app/blesta!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/html!/var/www/app/blesta!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf \
-    && echo '*/5 * * * * www-data /usr/local/bin/php /var/www/app/blesta/index.php cron' > /etc/cron.d/blesta \
-    && echo '0 9 * * 3 www-data [ `date +\%d` -le 7 ] && /usr/bin/curl -sSL https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.tar.gz | gunzip > /var/www/app/uploads/system/GeoLite2-City.mmdb' >> /etc/cron.d/blesta
-
-VOLUME /var/www/app
-WORKDIR /var/www/app
+VOLUME /var/www/
+WORKDIR /var/www/
 EXPOSE 80
 
 HEALTHCHECK CMD curl --silent --fail localhost:80 || exit 1
-CMD ["/usr/bin/supervisord"]
