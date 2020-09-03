@@ -43,10 +43,6 @@ RUN apt-get update \
     && sed -i 's/^LogFormat/#&/' /etc/apache2/apache2.conf \
     && echo "[PHP]" >> /usr/local/etc/php/php.ini \
     && echo "expose_php=Off" >> /usr/local/etc/php/php.ini \
-    && echo "ServerTokens Prod" >> /etc/apache2/conf-enabled/security.conf \
-    && echo "ServerSignature Off" >> /etc/apache2/conf-enabled/security.conf \
-    && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
-    && ln -sf /proc/self/fd/1 /var/log/apache2/error.log \
     && mkdir /docker-entrypoint-initweb.d
      
 ADD entrypoint.sh /entrypoint.sh
