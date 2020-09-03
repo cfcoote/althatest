@@ -1,0 +1,60 @@
+version: '3.7'
+
+services:
+  web:
+    image: docker-altha-generic
+#    networks:
+#     - traefik-public
+#     - altha-internal
+    volumes:
+      - webdata:/var/www/app 
+      - webinit:/docker-entrypoint-initweb.d
+    ports:
+      - 80:80
+#+#    deploy:
+#+#      placement:
+#+#        constraints:
+#+#          - node.labels.placement==roxanne
+#+#      labels:
+#+#        - traefik.enable=true
+#+#        - traefik.docker.network=traefik-public
+#+#        - traefik.constraint-label=traefik-public
+#+#        - traefik.http.routers.${APPID?Variable not set}-http.rule=Host(`${DOMAINID?Variable not set}`)
+#+#        - traefik.http.services.${APPID?Variable not set}-http.loadbalancer.server.port=80
+#+#        - traefik.http.routers.${APPID?Variable not set}-http.entrypoints=http
+#+#        - traefik.http.routers.${APPID?Variable not set}-http.middlewares=https-redirect
+#+#        - traefik.http.routers.${APPID?Variable not set}-https.rule=Host(`${DOMAINID?Variable not set}`)
+#+#        - traefik.http.routers.${APPID?Variable not set}-https.entrypoints=https
+#+#        - traefik.http.routers.${APPID?Variable not set}-https.tls=true
+#+#        - traefik.http.routers.${APPID?Variable not set}-https.tls.certresolver=le
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - dbdata:/var/lib/mysql 
+      - dbinit:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+#+#    deploy:
+#+#      placement:
+#+#        constraints:
+#+#          - node.labels.placement==roxanne
+
+#-#  dbadmin:
+#-#    image: adminer
+#-#    restart: always
+#-#    ports:
+#-#      - 8080:8080
+      
+volumes:
+  dbdata: 
+    name:  ${APP_PREFIX}-dbdata
+  dbinit:
+    name:  ${APP_PREFIX}-dbinit
+  webdata: 
+    name:  ${APP_PREFIX}-webdata
+  webinit:
+    name:  ${APP_PREFIX}-webinit
