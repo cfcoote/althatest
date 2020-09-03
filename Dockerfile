@@ -1,4 +1,4 @@
-FROM php:7.4-apache-buster
+FROM php:7.3-apache-buster
 
 ENV BUILD_DEPS \
         cron \
