@@ -23,6 +23,7 @@ ENV BUILD_DEPS \
         libldap2-dev \
         python3 \
         python3-pycurl \
+        rsync \
         unzip \
         wget \
         git
