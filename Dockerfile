@@ -47,10 +47,12 @@ RUN apt-get update \
     && echo "ServerSignature Off" >> /etc/apache2/conf-enabled/security.conf \
     && ln -sf /proc/self/fd/1 /var/log/apache2/access.log \
     && ln -sf /proc/self/fd/1 /var/log/apache2/error.log \
-
+    && mkdir /docker-entrypoint-initweb.d
+     
+ADD entrypoint.sh /entrypoint.sh
 
 VOLUME /var/www/app
 WORKDIR /var/www/app
 EXPOSE 80
-
+ENTRYPOINT ["/entrypoint.sh"]
 HEALTHCHECK CMD curl --silent --fail localhost:80 || exit 1
