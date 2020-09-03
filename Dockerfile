@@ -49,8 +49,8 @@ RUN apt-get update \
     && ln -sf /proc/self/fd/1 /var/log/apache2/error.log \
 
 
-VOLUME /var/www/
-WORKDIR /var/www/
+VOLUME /var/www/app
+WORKDIR /var/www/app
 EXPOSE 80
 
 HEALTHCHECK CMD curl --silent --fail localhost:80 || exit 1
