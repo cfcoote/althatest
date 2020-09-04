@@ -42,14 +42,15 @@ RUN apt-get update \
     && rm -Rf /etc/cron.{hourly,daily,weekly,monthly} \
     && echo "extension=mailparse.so" > /usr/local/etc/php/conf.d/docker-php-ext-mailparse.ini \
     && sed -i 's/^LogFormat/#&/' /etc/apache2/apache2.conf \
+    && sed -i 's%/var/www/html%/var/www/app%' /etc/apache2/sites-enabled/000-default.conf \
     && echo "[PHP]" >> /usr/local/etc/php/php.ini \
     && echo "expose_php=Off" >> /usr/local/etc/php/php.ini \
     && mkdir /docker-entrypoint-initweb.d
      
 ADD entrypoint.sh /entrypoint.sh
-
+VOLUME /docker-entrypoint-initweb.d
 VOLUME /var/www/app
 WORKDIR /var/www/app
 EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash","/entrypoint.sh"]
 HEALTHCHECK CMD curl --silent --fail localhost:80 || exit 1
